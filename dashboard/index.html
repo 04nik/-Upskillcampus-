@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart City Traffic Forecasting & Analysis Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles_v3.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Header Area -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fa-solid fa-square-poll-vertical"></i></div>
+                <div class="logo-text">
+                    <h1>MetroPulse</h1>
+                    <span>Smart City Traffic Forecasting</span>
+                </div>
+            </div>
+            <div class="controls-area">
+                <div class="control-group">
+                    <label for="junction-select"><i class="fa-solid fa-map-pin"></i> Select Junction</label>
+                    <select id="junction-select" class="premium-select">
+                        <option value="1">Junction 1 (Main Arterial Road)</option>
+                        <option value="2">Junction 2 (Commercial Corridor)</option>
+                        <option value="3">Junction 3 (Residential Area)</option>
+                        <option value="4">Junction 4 (City Exit/Highway Access)</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="app-main">
+            <!-- Metrics Cards Grid -->
+            <section class="metrics-grid">
+                <div class="metric-card" id="metric-avg-volume">
+                    <div class="metric-icon"><i class="fa-solid fa-car"></i></div>
+                    <div class="metric-info">
+                        <h3>Avg Hourly Volume</h3>
+                        <p class="metric-value" id="val-avg-volume">--</p>
+                        <span class="metric-trend" id="trend-avg-volume">Vehicles/Hour</span>
+                    </div>
+                </div>
+                <div class="metric-card" id="metric-peak-hour">
+                    <div class="metric-icon"><i class="fa-solid fa-gauge-high"></i></div>
+                    <div class="metric-info">
+                        <h3>Peak Hour Traffic</h3>
+                        <p class="metric-value" id="val-peak-hour">--</p>
+                        <span class="metric-trend" id="trend-peak-hour">Max Vehicles/Hour</span>
+                    </div>
+                </div>
+                <div class="metric-card" id="metric-holiday-impact">
+                    <div class="metric-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                    <div class="metric-info">
+                        <h3>Holiday Traffic Shift</h3>
+                        <p class="metric-value" id="val-holiday-impact">--</p>
+                        <span class="metric-trend" id="trend-holiday-impact">vs. Working Days</span>
+                    </div>
+                </div>
+                <div class="metric-card" id="metric-model-accuracy">
+                    <div class="metric-icon"><i class="fa-solid fa-bullseye"></i></div>
+                    <div class="metric-info">
+                        <h3>Forecast Accuracy</h3>
+                        <p class="metric-value" id="val-model-accuracy">--</p>
+                        <span class="metric-trend" id="trend-model-accuracy">R² Score (XGBoost)</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chart Section -->
+            <section class="chart-section glass-card">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <h2>Traffic Pattern Explorer</h2>
+                        <p>Analyze historical flows and explore machine learning predictions</p>
+                    </div>
+                    <div class="chart-tabs">
+                        <button class="tab-btn active" data-tab="forecast"><i class="fa-solid fa-chart-line"></i> Future
+                            Forecast</button>
+                        <button class="tab-btn" data-tab="diurnal"><i class="fa-solid fa-clock"></i> Daily
+                            Cycles</button>
+                        <button class="tab-btn" data-tab="weekly"><i class="fa-solid fa-calendar-days"></i> Weekly
+                            Profile</button>
+                        <button class="tab-btn" data-tab="holiday"><i class="fa-solid fa-umbrella-beach"></i> Holiday
+                            Impact</button>
+                        <button class="tab-btn" data-tab="history"><i class="fa-solid fa-history"></i> Historical
+                            Trends</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trafficChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Lower Section: Insights and Model Performance -->
+            <div class="details-grid">
+                <!-- Government & Policy Planning Card -->
+                <section class="insights-card glass-card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-circle-info"></i> Smart City Infrastructure & Planning Insights</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="insight-item">
+                            <span class="badge badge-warning" id="insight-peak-badge">Peak Congestion Control</span>
+                            <p id="insight-peak-desc">Congestion peaks around 9 AM and 6 PM. Dynamic signal timing is
+                                recommended during these hours to increase throughput.</p>
+                        </div>
+                        <div class="insight-item">
+                            <span class="badge badge-info" id="insight-holiday-badge">Holiday Management</span>
+                            <p id="insight-holiday-desc">Traffic drops by 15% on holidays, permitting scheduled road
+                                maintenance and utility works during holiday periods.</p>
+                        </div>
+                        <div class="insight-item">
+                            <span class="badge badge-success" id="insight-expansion-badge">Capacity Planning</span>
+                            <p id="insight-expansion-desc">Average traffic volume is growing at 3.2% month-over-month.
+                                Standard capacity expansion is required by late 2027.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Model Stats & Evaluation Card -->
+                <section class="model-stats-card glass-card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-brain"></i> Machine Learning Forecasting Performance</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Junction</th>
+                                        <th>Algorithm</th>
+                                        <th>Mean Abs Error (MAE)</th>
+                                        <th>Root Mean Sq Error (RMSE)</th>
+                                        <th>R² Coefficient</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="model-stats-tbody">
+                                    <tr>
+                                        <td colspan="5" style="text-align: center;">Loading model performance data...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="model-footnote">
+                            * Note: Models are trained using gradient boosted trees (XGBoost) and random forests, split
+                            sequentially with the last 2 months of training data (May & June 2017) reserved as a
+                            validation set.
+                        </p>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="app-footer-bar">
+            <p>MetroPulse Forecasting Dashboard &copy; 2026. Prepared for Smart City Infrastructure Operations.</p>
+        </footer>
+    </div>
+
+    <!-- Data and App scripts -->
+    <script src="data.js"></script>
+    <script src="app_v3.js"></script>
+</body>
+
+</html>
